@@ -173,8 +173,8 @@ extern void xil_printf(const char *format, ...);
  * We show how to submit multiple BDs for one transmit.
  * The receive side gets one completion per transfer.
  */
-#define NUMBER_OF_BDS_PER_PKT		12
-#define NUMBER_OF_PKTS_TO_TRANSFER 	11
+#define NUMBER_OF_BDS_PER_PKT		1
+#define NUMBER_OF_PKTS_TO_TRANSFER 	1
 #define NUMBER_OF_BDS_TO_TRANSFER	(NUMBER_OF_PKTS_TO_TRANSFER * \
 						NUMBER_OF_BDS_PER_PKT)
 
@@ -487,6 +487,7 @@ static int CheckData(int Length, u8 StartValue)
 
 			return XST_FAILURE;
 		}
+		printf("%d\n", RxPacket[Index]);
 		Value = (Value + 1) & 0xFF;
 	}
 
