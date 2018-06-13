@@ -223,6 +223,9 @@ static int RxSetup(XAxiDma * AxiDmaInstPtr);
 static int TxSetup(XAxiDma * AxiDmaInstPtr);
 static int SendPacket(XAxiDma * AxiDmaInstPtr);
 
+static void set_packet();
+static void matrix_operation();
+
 /************************** Variable Definitions *****************************/
 /*
  * Device instance definitions
@@ -247,6 +250,7 @@ XTime tStart, tEnd, tsend1, tsend2, t1, t2, t3, t4;
  * Buffer for transmit packet. Must be 32-bit aligned to be used by DMA.
  */
 u32 *Packet = (u32 *) TX_BUFFER_BASE;
+u8 *TxPacket;
 
 /*****************************************************************************/
 /**
@@ -330,10 +334,21 @@ int main(void)
 		return XST_FAILURE;
 	}
 
+
+
 	/* Initialize flags before start transfer test  */
 	TxDone = 0;
 	RxDone = 0;
 	Error = 0;
+
+	set_packet();
+	/* Get initial time */
+	XTime_GetTime(&tsend1);
+	/* Send a packet */
+	Status = SendPacket(&AxiDma);
+
+	/* Get finish time */
+	XTime_GetTime(&tsend2);
 
 	/* Send a packet */
 	Status = SendPacket(&AxiDma);
@@ -350,6 +365,25 @@ int main(void)
 			(RxDone < NUMBER_OF_BDS_TO_TRANSFER)) && !Error) {
 		/* NOP */
 	}
+
+
+	XTime_GetTime(&tEnd);
+
+
+	//printf("Output took %llu clock cycles.\n", 2*(tEnd - tStart));
+	printf("Send packet took %.2f us.\n",
+           1.0 * (tsend2 - tsend1) / (COUNTS_PER_SECOND/1000000));
+
+	printf("Waiting time took %.2f us.\n",
+           1.0 * (tEnd - tsend2) / (COUNTS_PER_SECOND/1000000));
+
+	//printf("Set DMA took %llu clock cycles.\n", 2*(t2 - t1));
+	printf("Set DMA took %.2f us.\n",
+           1.0 * (t2 - t1) / (COUNTS_PER_SECOND/1000000));
+
+	//printf("DMA to HW took %llu clock cycles.\n", 2*(t4 - t3));
+	printf("DMA to HW took %.2f us.\n",
+           1.0 * (t4 - t3) / (COUNTS_PER_SECOND/1000000));
 
 	if (Error) {
 		xil_printf("Failed test transmit%s done, "
@@ -1090,8 +1124,6 @@ static int TxSetup(XAxiDma * AxiDmaInstPtr)
 static int SendPacket(XAxiDma * AxiDmaInstPtr)
 {
 	XAxiDma_BdRing *TxRingPtr = XAxiDma_GetTxRing(AxiDmaInstPtr);
-	u8 *TxPacket;
-	u8 Value;
 	XAxiDma_Bd *BdPtr, *BdCurPtr;
 	int Status;
 	int Index, Pkts;
@@ -1111,17 +1143,6 @@ static int SendPacket(XAxiDma * AxiDmaInstPtr)
 		    TxRingPtr->MaxTransferLen);
 
 		return XST_INVALID_PARAM;
-	}
-
-	TxPacket = (u8 *) Packet;
-
-	Value = 0xC;
-
-	for(Index = 0; Index < MAX_PKT_LEN * NUMBER_OF_BDS_TO_TRANSFER;
-								Index ++) {
-		TxPacket[Index] = Value;
-
-		Value = (Value + 1) & 0xFF;
 	}
 
 	/* Flush the SrcBuffer before the DMA transfer, in case the Data Cache
@@ -1145,6 +1166,7 @@ static int SendPacket(XAxiDma * AxiDmaInstPtr)
 	BufferAddr = (UINTPTR)Packet;
 	BdCurPtr = BdPtr;
 
+	XTime_GetTime(&t1);
 	/*
 	 * Set up the BD using the information of the packet to transmit
 	 * Each transfer has NUMBER_OF_BDS_PER_PKT BDs
@@ -1206,10 +1228,13 @@ static int SendPacket(XAxiDma * AxiDmaInstPtr)
 			BdCurPtr = (XAxiDma_Bd *)XAxiDma_BdRingNext(TxRingPtr, BdCurPtr);
 		}
 	}
+	XTime_GetTime(&t2);
 
 	/* Give the BD to hardware */
+	XTime_GetTime(&t3);
 	Status = XAxiDma_BdRingToHw(TxRingPtr, NUMBER_OF_BDS_TO_TRANSFER,
 						BdPtr);
+	XTime_GetTime(&t4);
 	if (Status != XST_SUCCESS) {
 
 		xil_printf("Failed to hw, length %d\r\n",
@@ -1221,3 +1246,69 @@ static int SendPacket(XAxiDma * AxiDmaInstPtr)
 
 	return XST_SUCCESS;
 }
+
+static void set_packet() {
+	u8 Value;
+	int Index;
+
+	TxPacket = (u8 *) Packet;
+	Value = 0xC;
+
+	for(Index = 0; Index < MAX_PKT_LEN * NUMBER_OF_BDS_TO_TRANSFER;
+								Index ++) {
+		TxPacket[Index] = Value;
+
+		Value = (Value + 1) & 0xFF;
+	}
+
+}
+
+static void matrix_operation() {
+	// c implementation
+	    int c, d, k;
+		int sum = 0;
+	    int p = 3;
+	    int q = 3;
+	    int m = 3;
+	    int n = 3;
+	    int first[3][3],second[3][3],multiply[3][3];
+
+
+
+	      printf("Enter size of matrix columns and rows 3 or 6\n");
+	      scanf("%d", &m);
+	      n = m;
+	      printf("columnns %d x %d",m,m);
+	      int value = 1;
+	        for (c = 0; c < m; c++)
+	        {
+	        	printf("\n ");
+	          for (d = 0; d < n; d++)
+	          {
+	            first[c][d] = value++;
+	            printf(" %d ", first[c][d]);
+	          }
+	        }
+	        printf("\n ");
+
+
+	        XTime_GetTime(&t1);
+	    for (c = 0; c < m; c++)
+		{
+		  for (d = 0; d < q; d++)
+		  {
+			for (k = 0; k < p; k++)
+			{
+			  sum = sum + first[c][k]*first[k][d];
+			}
+
+			multiply[c][d] = sum;
+			sum = 0;
+		  }
+		}
+
+		XTime_GetTime(&t2);
+
+}
+
+
