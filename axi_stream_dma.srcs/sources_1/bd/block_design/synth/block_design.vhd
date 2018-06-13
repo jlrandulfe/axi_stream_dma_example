@@ -1,7 +1,7 @@
 --Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------
 --Tool Version: Vivado v.2017.4 (lin64) Build 2086221 Fri Dec 15 20:54:30 MST 2017
---Date        : Wed Jun 13 18:34:59 2018
+--Date        : Wed Jun 13 21:11:35 2018
 --Host        : javi-SAT-L850-Ubuntu running 64-bit Ubuntu 16.04.4 LTS
 --Command     : generate_target block_design.bd
 --Design      : block_design
@@ -2664,7 +2664,7 @@ entity block_design is
     FIXED_IO_ps_srstb : inout STD_LOGIC
   );
   attribute CORE_GENERATION_INFO : string;
-  attribute CORE_GENERATION_INFO of block_design : entity is "block_design,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=block_design,x_ipVersion=1.00.a,x_ipLanguage=VHDL,numBlks=18,numReposBlks=11,numNonXlnxBlks=0,numHierBlks=7,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=0,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=5,da_ps7_cnt=1,synth_mode=OOC_per_IP}";
+  attribute CORE_GENERATION_INFO of block_design : entity is "block_design,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=block_design,x_ipVersion=1.00.a,x_ipLanguage=VHDL,numBlks=20,numReposBlks=13,numNonXlnxBlks=1,numHierBlks=7,maxHierDepth=0,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=0,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=5,da_ps7_cnt=1,synth_mode=OOC_per_IP}";
   attribute HW_HANDOFF : string;
   attribute HW_HANDOFF of block_design : entity is "block_design.hwdef";
 end block_design;
@@ -2930,6 +2930,43 @@ architecture STRUCTURE of block_design is
     dout : out STD_LOGIC_VECTOR ( 1 downto 0 )
   );
   end component block_design_xlconcat_0_0;
+  component block_design_stream_processing_0_0 is
+  port (
+    s00_axis_tdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    s00_axis_tstrb : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    s00_axis_tlast : in STD_LOGIC;
+    s00_axis_tvalid : in STD_LOGIC;
+    s00_axis_tready : out STD_LOGIC;
+    s00_axis_aclk : in STD_LOGIC;
+    s00_axis_aresetn : in STD_LOGIC;
+    m00_axis_tdata : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    m00_axis_tstrb : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    m00_axis_tlast : out STD_LOGIC;
+    m00_axis_tvalid : out STD_LOGIC;
+    m00_axis_tready : in STD_LOGIC;
+    m00_axis_aclk : in STD_LOGIC;
+    m00_axis_aresetn : in STD_LOGIC
+  );
+  end component block_design_stream_processing_0_0;
+  component block_design_axis_data_fifo_0_1 is
+  port (
+    s_axis_aresetn : in STD_LOGIC;
+    s_axis_aclk : in STD_LOGIC;
+    s_axis_tvalid : in STD_LOGIC;
+    s_axis_tready : out STD_LOGIC;
+    s_axis_tdata : in STD_LOGIC_VECTOR ( 31 downto 0 );
+    s_axis_tstrb : in STD_LOGIC_VECTOR ( 3 downto 0 );
+    s_axis_tlast : in STD_LOGIC;
+    m_axis_tvalid : out STD_LOGIC;
+    m_axis_tready : in STD_LOGIC;
+    m_axis_tdata : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    m_axis_tstrb : out STD_LOGIC_VECTOR ( 3 downto 0 );
+    m_axis_tlast : out STD_LOGIC;
+    axis_data_count : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    axis_wr_data_count : out STD_LOGIC_VECTOR ( 31 downto 0 );
+    axis_rd_data_count : out STD_LOGIC_VECTOR ( 31 downto 0 )
+  );
+  end component block_design_axis_data_fifo_0_1;
   signal axi_dma_0_M_AXIS_MM2S_TDATA : STD_LOGIC_VECTOR ( 31 downto 0 );
   signal axi_dma_0_M_AXIS_MM2S_TKEEP : STD_LOGIC_VECTOR ( 3 downto 0 );
   signal axi_dma_0_M_AXIS_MM2S_TLAST : STD_LOGIC;
@@ -3034,10 +3071,13 @@ architecture STRUCTURE of block_design is
   signal axi_mem_intercon_M00_AXI_WSTRB : STD_LOGIC_VECTOR ( 7 downto 0 );
   signal axi_mem_intercon_M00_AXI_WVALID : STD_LOGIC;
   signal axis_data_fifo_0_M_AXIS_TDATA : STD_LOGIC_VECTOR ( 31 downto 0 );
-  signal axis_data_fifo_0_M_AXIS_TKEEP : STD_LOGIC_VECTOR ( 3 downto 0 );
   signal axis_data_fifo_0_M_AXIS_TLAST : STD_LOGIC;
   signal axis_data_fifo_0_M_AXIS_TREADY : STD_LOGIC;
   signal axis_data_fifo_0_M_AXIS_TVALID : STD_LOGIC;
+  signal axis_data_fifo_1_M_AXIS_TDATA : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal axis_data_fifo_1_M_AXIS_TLAST : STD_LOGIC;
+  signal axis_data_fifo_1_M_AXIS_TREADY : STD_LOGIC;
+  signal axis_data_fifo_1_M_AXIS_TVALID : STD_LOGIC;
   signal processing_system7_0_DDR_ADDR : STD_LOGIC_VECTOR ( 14 downto 0 );
   signal processing_system7_0_DDR_BA : STD_LOGIC_VECTOR ( 2 downto 0 );
   signal processing_system7_0_DDR_CAS_N : STD_LOGIC;
@@ -3117,12 +3157,22 @@ architecture STRUCTURE of block_design is
   signal ps7_0_axi_periph_M00_AXI_WVALID : STD_LOGIC;
   signal rst_ps7_0_100M_interconnect_aresetn : STD_LOGIC_VECTOR ( 0 to 0 );
   signal rst_ps7_0_100M_peripheral_aresetn : STD_LOGIC_VECTOR ( 0 to 0 );
+  signal stream_processing_0_M00_AXIS_TDATA : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal stream_processing_0_M00_AXIS_TLAST : STD_LOGIC;
+  signal stream_processing_0_M00_AXIS_TREADY : STD_LOGIC;
+  signal stream_processing_0_M00_AXIS_TSTRB : STD_LOGIC_VECTOR ( 3 downto 0 );
+  signal stream_processing_0_M00_AXIS_TVALID : STD_LOGIC;
   signal xlconcat_0_dout : STD_LOGIC_VECTOR ( 1 downto 0 );
   signal NLW_axi_dma_0_mm2s_prmry_reset_out_n_UNCONNECTED : STD_LOGIC;
   signal NLW_axi_dma_0_s2mm_prmry_reset_out_n_UNCONNECTED : STD_LOGIC;
   signal NLW_axis_data_fifo_0_axis_data_count_UNCONNECTED : STD_LOGIC_VECTOR ( 31 downto 0 );
   signal NLW_axis_data_fifo_0_axis_rd_data_count_UNCONNECTED : STD_LOGIC_VECTOR ( 31 downto 0 );
   signal NLW_axis_data_fifo_0_axis_wr_data_count_UNCONNECTED : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal NLW_axis_data_fifo_0_m_axis_tkeep_UNCONNECTED : STD_LOGIC_VECTOR ( 3 downto 0 );
+  signal NLW_axis_data_fifo_1_axis_data_count_UNCONNECTED : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal NLW_axis_data_fifo_1_axis_rd_data_count_UNCONNECTED : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal NLW_axis_data_fifo_1_axis_wr_data_count_UNCONNECTED : STD_LOGIC_VECTOR ( 31 downto 0 );
+  signal NLW_axis_data_fifo_1_m_axis_tstrb_UNCONNECTED : STD_LOGIC_VECTOR ( 3 downto 0 );
   signal NLW_processing_system7_0_ENET0_MDIO_MDC_UNCONNECTED : STD_LOGIC;
   signal NLW_processing_system7_0_ENET0_MDIO_O_UNCONNECTED : STD_LOGIC;
   signal NLW_processing_system7_0_ENET0_MDIO_T_UNCONNECTED : STD_LOGIC;
@@ -3254,11 +3304,11 @@ axi_dma_0: component block_design_axi_dma_0_0
       s_axi_lite_wdata(31 downto 0) => ps7_0_axi_periph_M00_AXI_WDATA(31 downto 0),
       s_axi_lite_wready => ps7_0_axi_periph_M00_AXI_WREADY,
       s_axi_lite_wvalid => ps7_0_axi_periph_M00_AXI_WVALID,
-      s_axis_s2mm_tdata(31 downto 0) => axis_data_fifo_0_M_AXIS_TDATA(31 downto 0),
-      s_axis_s2mm_tkeep(3 downto 0) => axis_data_fifo_0_M_AXIS_TKEEP(3 downto 0),
-      s_axis_s2mm_tlast => axis_data_fifo_0_M_AXIS_TLAST,
-      s_axis_s2mm_tready => axis_data_fifo_0_M_AXIS_TREADY,
-      s_axis_s2mm_tvalid => axis_data_fifo_0_M_AXIS_TVALID
+      s_axis_s2mm_tdata(31 downto 0) => axis_data_fifo_1_M_AXIS_TDATA(31 downto 0),
+      s_axis_s2mm_tkeep(3 downto 0) => B"1111",
+      s_axis_s2mm_tlast => axis_data_fifo_1_M_AXIS_TLAST,
+      s_axis_s2mm_tready => axis_data_fifo_1_M_AXIS_TREADY,
+      s_axis_s2mm_tvalid => axis_data_fifo_1_M_AXIS_TVALID
     );
 axi_mem_intercon: entity work.block_design_axi_mem_intercon_0
      port map (
@@ -3375,7 +3425,7 @@ axis_data_fifo_0: component block_design_axis_data_fifo_0_0
       axis_rd_data_count(31 downto 0) => NLW_axis_data_fifo_0_axis_rd_data_count_UNCONNECTED(31 downto 0),
       axis_wr_data_count(31 downto 0) => NLW_axis_data_fifo_0_axis_wr_data_count_UNCONNECTED(31 downto 0),
       m_axis_tdata(31 downto 0) => axis_data_fifo_0_M_AXIS_TDATA(31 downto 0),
-      m_axis_tkeep(3 downto 0) => axis_data_fifo_0_M_AXIS_TKEEP(3 downto 0),
+      m_axis_tkeep(3 downto 0) => NLW_axis_data_fifo_0_m_axis_tkeep_UNCONNECTED(3 downto 0),
       m_axis_tlast => axis_data_fifo_0_M_AXIS_TLAST,
       m_axis_tready => axis_data_fifo_0_M_AXIS_TREADY,
       m_axis_tvalid => axis_data_fifo_0_M_AXIS_TVALID,
@@ -3386,6 +3436,24 @@ axis_data_fifo_0: component block_design_axis_data_fifo_0_0
       s_axis_tlast => axi_dma_0_M_AXIS_MM2S_TLAST,
       s_axis_tready => axi_dma_0_M_AXIS_MM2S_TREADY,
       s_axis_tvalid => axi_dma_0_M_AXIS_MM2S_TVALID
+    );
+axis_data_fifo_1: component block_design_axis_data_fifo_0_1
+     port map (
+      axis_data_count(31 downto 0) => NLW_axis_data_fifo_1_axis_data_count_UNCONNECTED(31 downto 0),
+      axis_rd_data_count(31 downto 0) => NLW_axis_data_fifo_1_axis_rd_data_count_UNCONNECTED(31 downto 0),
+      axis_wr_data_count(31 downto 0) => NLW_axis_data_fifo_1_axis_wr_data_count_UNCONNECTED(31 downto 0),
+      m_axis_tdata(31 downto 0) => axis_data_fifo_1_M_AXIS_TDATA(31 downto 0),
+      m_axis_tlast => axis_data_fifo_1_M_AXIS_TLAST,
+      m_axis_tready => axis_data_fifo_1_M_AXIS_TREADY,
+      m_axis_tstrb(3 downto 0) => NLW_axis_data_fifo_1_m_axis_tstrb_UNCONNECTED(3 downto 0),
+      m_axis_tvalid => axis_data_fifo_1_M_AXIS_TVALID,
+      s_axis_aclk => processing_system7_0_FCLK_CLK0,
+      s_axis_aresetn => rst_ps7_0_100M_peripheral_aresetn(0),
+      s_axis_tdata(31 downto 0) => stream_processing_0_M00_AXIS_TDATA(31 downto 0),
+      s_axis_tlast => stream_processing_0_M00_AXIS_TLAST,
+      s_axis_tready => stream_processing_0_M00_AXIS_TREADY,
+      s_axis_tstrb(3 downto 0) => stream_processing_0_M00_AXIS_TSTRB(3 downto 0),
+      s_axis_tvalid => stream_processing_0_M00_AXIS_TVALID
     );
 processing_system7_0: component block_design_processing_system7_0_0
      port map (
@@ -3587,6 +3655,23 @@ rst_ps7_0_100M: component block_design_rst_ps7_0_100M_0
       peripheral_aresetn(0) => rst_ps7_0_100M_peripheral_aresetn(0),
       peripheral_reset(0) => NLW_rst_ps7_0_100M_peripheral_reset_UNCONNECTED(0),
       slowest_sync_clk => processing_system7_0_FCLK_CLK0
+    );
+stream_processing_0: component block_design_stream_processing_0_0
+     port map (
+      m00_axis_aclk => processing_system7_0_FCLK_CLK0,
+      m00_axis_aresetn => rst_ps7_0_100M_peripheral_aresetn(0),
+      m00_axis_tdata(31 downto 0) => stream_processing_0_M00_AXIS_TDATA(31 downto 0),
+      m00_axis_tlast => stream_processing_0_M00_AXIS_TLAST,
+      m00_axis_tready => stream_processing_0_M00_AXIS_TREADY,
+      m00_axis_tstrb(3 downto 0) => stream_processing_0_M00_AXIS_TSTRB(3 downto 0),
+      m00_axis_tvalid => stream_processing_0_M00_AXIS_TVALID,
+      s00_axis_aclk => processing_system7_0_FCLK_CLK0,
+      s00_axis_aresetn => rst_ps7_0_100M_peripheral_aresetn(0),
+      s00_axis_tdata(31 downto 0) => axis_data_fifo_0_M_AXIS_TDATA(31 downto 0),
+      s00_axis_tlast => axis_data_fifo_0_M_AXIS_TLAST,
+      s00_axis_tready => axis_data_fifo_0_M_AXIS_TREADY,
+      s00_axis_tstrb(3 downto 0) => B"1111",
+      s00_axis_tvalid => axis_data_fifo_0_M_AXIS_TVALID
     );
 xlconcat_0: component block_design_xlconcat_0_0
      port map (

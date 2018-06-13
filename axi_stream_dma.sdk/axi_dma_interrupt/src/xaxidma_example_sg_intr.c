@@ -108,6 +108,9 @@ extern void xil_printf(const char *format, ...);
  #include "xscugic.h"
 #endif
 
+// Timer dependency
+#include "xtime_l.h"
+
 /******************** Constant Definitions **********************************/
 /*
  * Device hardware build related constants.
@@ -235,6 +238,10 @@ static INTC Intc;	/* Instance of the Interrupt Controller */
 volatile int TxDone;
 volatile int RxDone;
 volatile int Error;
+
+// Timer start and end variables.
+XTime tStart, tEnd, tsend1, tsend2, t1, t2, t3, t4;
+
 
 /*
  * Buffer for transmit packet. Must be 32-bit aligned to be used by DMA.
