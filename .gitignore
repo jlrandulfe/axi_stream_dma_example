@@ -30,3 +30,5 @@
 ## SDK auxiliary files
 **/*.sdk/.sdk
 **/*.sdk/.metadata
+**/*.sdk/webtalk
+*.bit
