@@ -39,6 +39,6 @@ architecture Behavioral of stream_algorithm is
 
 begin
 
-   data_out <= data_in;
+   data_out <= data_in and x"0000FFFF";
 
 end Behavioral;

@@ -589,8 +589,8 @@
         <xilinx:taxonomy>AXI_Peripheral</xilinx:taxonomy>
       </xilinx:taxonomies>
       <xilinx:displayName>stream_processing_v1.0</xilinx:displayName>
-      <xilinx:coreRevision>2</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2018-06-13T17:14:27Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>3</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2018-06-13T20:16:14Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="user.org:user:stream_processing:1.0_ARCHIVE_LOCATION">/home/jalop17/01-scripts/02-VHDL/axi_stream_dma_example/ip_repo/stream_processing_1.0</xilinx:tag>
       </xilinx:tags>
