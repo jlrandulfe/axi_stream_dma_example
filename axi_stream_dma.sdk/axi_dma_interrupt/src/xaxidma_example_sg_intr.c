@@ -243,7 +243,7 @@ volatile int RxDone;
 volatile int Error;
 
 // Timer start and end variables.
-XTime tStart, tEnd, tsend1, tsend2, t1, t2, t3, t4;
+XTime tStart, tEnd, tsend1, tsend2, t0, t01, t1, t2, t3, t4;
 
 
 /*
@@ -350,8 +350,7 @@ int main(void)
 	/* Get finish time */
 	XTime_GetTime(&tsend2);
 
-	/* Send a packet */
-	Status = SendPacket(&AxiDma);
+
 	if (Status != XST_SUCCESS) {
 
 		xil_printf("Failed send packet\r\n");
@@ -370,20 +369,19 @@ int main(void)
 	XTime_GetTime(&tEnd);
 
 
-	//printf("Output took %llu clock cycles.\n", 2*(tEnd - tStart));
 	printf("Send packet took %.2f us.\n",
            1.0 * (tsend2 - tsend1) / (COUNTS_PER_SECOND/1000000));
-
 	printf("Waiting time took %.2f us.\n",
            1.0 * (tEnd - tsend2) / (COUNTS_PER_SECOND/1000000));
-
-	//printf("Set DMA took %llu clock cycles.\n", 2*(t2 - t1));
+	printf("Flush cache took %.2f us.\n",
+           1.0 * (t01 - t0) / (COUNTS_PER_SECOND/1000000));
+	printf("Allocate memory took %.2f us.\n",
+           1.0 * (t1 - t01) / (COUNTS_PER_SECOND/1000000));
 	printf("Set DMA took %.2f us.\n",
            1.0 * (t2 - t1) / (COUNTS_PER_SECOND/1000000));
-
-	//printf("DMA to HW took %llu clock cycles.\n", 2*(t4 - t3));
 	printf("DMA to HW took %.2f us.\n",
-           1.0 * (t4 - t3) / (COUNTS_PER_SECOND/1000000));
+           1.0 * (t3 - t2) / (COUNTS_PER_SECOND/1000000));
+
 
 	if (Error) {
 		xil_printf("Failed test transmit%s done, "
@@ -1126,6 +1124,7 @@ static int TxSetup(XAxiDma * AxiDmaInstPtr)
 ******************************************************************************/
 static int SendPacket(XAxiDma * AxiDmaInstPtr)
 {
+	XTime_GetTime(&t0);
 	XAxiDma_BdRing *TxRingPtr = XAxiDma_GetTxRing(AxiDmaInstPtr);
 	XAxiDma_Bd *BdPtr, *BdCurPtr;
 	int Status;
@@ -1151,13 +1150,14 @@ static int SendPacket(XAxiDma * AxiDmaInstPtr)
 	/* Flush the SrcBuffer before the DMA transfer, in case the Data Cache
 	 * is enabled
 	 */
+
 	Xil_DCacheFlushRange((UINTPTR)TxPacket, MAX_PKT_LEN *
 							NUMBER_OF_BDS_TO_TRANSFER);
 #ifdef __aarch64__
 	Xil_DCacheFlushRange((UINTPTR)RX_BUFFER_BASE, MAX_PKT_LEN *
 							NUMBER_OF_BDS_TO_TRANSFER);
 #endif
-
+	XTime_GetTime(&t01);
 	Status = XAxiDma_BdRingAlloc(TxRingPtr, NUMBER_OF_BDS_TO_TRANSFER,
 								&BdPtr);
 	if (Status != XST_SUCCESS) {
@@ -1234,10 +1234,9 @@ static int SendPacket(XAxiDma * AxiDmaInstPtr)
 	XTime_GetTime(&t2);
 
 	/* Give the BD to hardware */
-	XTime_GetTime(&t3);
 	Status = XAxiDma_BdRingToHw(TxRingPtr, NUMBER_OF_BDS_TO_TRANSFER,
 						BdPtr);
-	XTime_GetTime(&t4);
+	XTime_GetTime(&t3);
 	if (Status != XST_SUCCESS) {
 
 		xil_printf("Failed to hw, length %d\r\n",
@@ -1246,7 +1245,6 @@ static int SendPacket(XAxiDma * AxiDmaInstPtr)
 
 		return XST_FAILURE;
 	}
-
 	return XST_SUCCESS;
 }
 
