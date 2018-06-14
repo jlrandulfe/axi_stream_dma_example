@@ -173,7 +173,7 @@ extern void xil_printf(const char *format, ...);
  * We show how to submit multiple BDs for one transmit.
  * The receive side gets one completion per transfer.
  */
-#define NUMBER_OF_BDS_PER_PKT		1
+#define NUMBER_OF_BDS_PER_PKT		10
 #define NUMBER_OF_PKTS_TO_TRANSFER 	1
 #define NUMBER_OF_BDS_TO_TRANSFER	(NUMBER_OF_PKTS_TO_TRANSFER * \
 						NUMBER_OF_BDS_PER_PKT)
@@ -225,6 +225,7 @@ static int SendPacket(XAxiDma * AxiDmaInstPtr);
 
 static void set_packet();
 static void matrix_operation();
+static void vector_adder();
 
 /************************** Variable Definitions *****************************/
 /*
@@ -243,7 +244,7 @@ volatile int RxDone;
 volatile int Error;
 
 // Timer start and end variables.
-XTime tStart, tEnd, tsend1, tsend2, t0, t01, t1, t2, t3, t4;
+XTime tStart, tEnd, tsend1, tsend2, t0, t01, t1, t2, t3, t4, tproc1, tproc2;
 
 
 /*
@@ -342,6 +343,7 @@ int main(void)
 	Error = 0;
 
 	set_packet();
+	vector_adder();
 	/* Get initial time */
 	XTime_GetTime(&tsend1);
 	/* Send a packet */
@@ -381,6 +383,9 @@ int main(void)
            1.0 * (t2 - t1) / (COUNTS_PER_SECOND/1000000));
 	printf("DMA to HW took %.2f us.\n",
            1.0 * (t3 - t2) / (COUNTS_PER_SECOND/1000000));
+
+	printf("Processor algorithm took %.2f us.\n",
+           1.0 * (tproc2 - tproc1) / (COUNTS_PER_SECOND/1000000));
 
 
 	if (Error) {
@@ -487,7 +492,7 @@ static int CheckData(int Length, u8 StartValue)
 			return XST_FAILURE;
 		}
 		*/
-		printf("%d\n", RxPacket[Index]);
+		//printf("%d\n", RxPacket[Index]);
 		Value = (Value + 1) & 0xFF;
 	}
 
@@ -1309,6 +1314,21 @@ static void matrix_operation() {
 		}
 
 		XTime_GetTime(&t2);
+
+}
+
+static void vector_adder() {
+
+	int Index;
+	XTime_GetTime(&tproc1);
+	int solution[MAX_PKT_LEN * NUMBER_OF_BDS_TO_TRANSFER];
+
+	for(Index = 0; Index < MAX_PKT_LEN * NUMBER_OF_BDS_TO_TRANSFER;
+								Index ++) {
+		solution[Index] = TxPacket[Index] + TxPacket[Index];
+
+	}
+	XTime_GetTime(&tproc2);
 
 }
 

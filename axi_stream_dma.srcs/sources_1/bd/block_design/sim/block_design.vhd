@@ -1,7 +1,7 @@
 --Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------
 --Tool Version: Vivado v.2017.4 (lin64) Build 2086221 Fri Dec 15 20:54:30 MST 2017
---Date        : Wed Jun 13 22:16:56 2018
+--Date        : Thu Jun 14 17:14:17 2018
 --Host        : javi-SAT-L850-Ubuntu running 64-bit Ubuntu 16.04.4 LTS
 --Command     : generate_target block_design.bd
 --Design      : block_design

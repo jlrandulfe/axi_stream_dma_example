@@ -39,6 +39,6 @@ architecture Behavioral of stream_algorithm is
 
 begin
 
-   data_out <= data_in and x"0000FFFF";
+   data_out <= std_logic_vector(unsigned(data_in) + unsigned(data_in));
 
 end Behavioral;
